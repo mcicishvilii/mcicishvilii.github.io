@@ -1,37 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ka">
 <head>
   <meta charset="UTF-8">
-  <title>API Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Toko Ylea?</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 2em;
-      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
     }
-    #result {
-      padding: 1em;
-      background-color: white;
-      border: 1px solid #ccc;
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 90%;
+      width: 400px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border: none;
       border-radius: 8px;
-      max-width: 400px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <h1>API Test Result</h1>
-  <div id="result">Loading...</div>
+  <div class="container">
+    <h1>toko ylea?</h1>
+    <button id="askBtn">gamoavline axla</button>
+    <div id="result"></div>
+  </div>
 
   <script>
-    fetch('https://ladogudi.serv00.net/api/test')
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('result').textContent = data.message;
-      })
-      .catch(error => {
-        document.getElementById('result').textContent = 'Error fetching data.';
-        console.error('Error:', error);
-      });
+    document.getElementById('askBtn').addEventListener('click', function () {
+      fetch('https://ladogudi.serv00.net/api/test')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('result').textContent = data.message;
+        })
+        .catch(error => {
+          document.getElementById('result').textContent = 'Error fetching response.';
+          console.error('Error:', error);
+        });
+    });
   </script>
 </body>
 </html>
