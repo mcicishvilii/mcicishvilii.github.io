@@ -1,76 +1,40 @@
 <!DOCTYPE html>
-<html lang="ka">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tokos bichova</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f9f9f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
-
-    .container {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 90%;
-      width: 400px;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    button {
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    #result {
-      margin-top: 1.5rem;
-      font-size: 1.2rem;
-      color: #333;
-    }
-  </style>
+  <title>Login</title>
 </head>
 <body>
-  <div class="container">
-    <h1>toko kargi bichia?</h1>
-    <button id="askBtn">gamoavline axla</button>
-    <div id="result"></div>
-  </div>
+  <h2>Login</h2>
+  <form id="loginForm">
+    <input type="email" placeholder="Email" name="email" required><br>
+    <input type="password" placeholder="Password" name="password" required><br>
+    <button type="submit">Login</button>
+  </form>
+  <p id="loginResult"></p>
 
   <script>
-    document.getElementById('askBtn').addEventListener('click', function () {
-      fetch('https://ladogudi.serv00.net/api/test')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('result').textContent = data.message;
-        })
-        .catch(error => {
-          document.getElementById('result').textContent = 'Error fetching response.';
-          console.error('Error:', error);
-        });
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      const res = await fetch('https://ladogudi.serv00.net/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('refresh_token', result.refresh_token);
+        document.getElementById('loginResult').innerText = result.message;
+      } else {
+        document.getElementById('loginResult').innerText = result.message || 'Login failed';
+      }
     });
   </script>
 </body>
