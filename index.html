@@ -9,6 +9,9 @@
 </head>
 <body class="bg-success-subtle">
   <div class="form-container">
+    <!-- Feedback Area -->
+    <div id="feedback" class="alert d-none" role="alert"></div>
+
     <!-- Nav tabs -->
     <ul class="nav nav-tabs mb-3" id="authTab" role="tablist">
       <li class="nav-item" role="presentation">
@@ -25,10 +28,10 @@
       <div class="tab-pane fade show active" id="login" role="tabpanel">
         <form id="loginForm">
           <div class="mb-3">
-            <input type="email" class="form-control" placeholder="Email" required>
+            <input type="email" class="form-control" id="loginEmail" placeholder="Email" required>
           </div>
           <div class="mb-3">
-            <input type="password" class="form-control" placeholder="Password" required>
+            <input type="password" class="form-control" id="loginPassword" placeholder="Password" required>
           </div>
           <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
@@ -46,14 +49,17 @@
         <form id="signupForm">
           <div class="row mb-3">
             <div class="col">
-              <input type="text" class="form-control" placeholder="First Name" required>
+              <input type="text" class="form-control" id="firstName" placeholder="First Name" required>
             </div>
             <div class="col">
-              <input type="text" class="form-control" placeholder="Last Name" required>
+              <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
             </div>
           </div>
           <div class="mb-3">
-            <input type="email" class="form-control" placeholder="Email Address" required>
+            <input type="email" class="form-control" id="signupEmail" placeholder="Email Address" required>
+          </div>
+          <div class="mb-3">
+            <input type="password" class="form-control" id="signupPassword" placeholder="Password" required>
           </div>
           <button type="submit" class="btn btn-success w-100">Sign Up</button>
         </form>
@@ -62,5 +68,69 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Utility function to show feedback
+    function showFeedback(message, type) {
+      const feedback = document.getElementById('feedback');
+      feedback.textContent = message;
+      feedback.className = `alert alert-${type} d-block`;
+      setTimeout(() => feedback.className = 'alert d-none', 5000);
+    }
+
+    // Handle Login Form Submission
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch('https://ladogudi.serv00.net/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem('access_token', data.access_token);
+          localStorage.setItem('refresh_token', data.refresh_token);
+          showFeedback(data.message, 'success');
+          setTimeout(() => window.location.href = 'dashboard.html', 1000);
+        } else {
+          showFeedback(data.error || 'Login failed', 'danger');
+        }
+      } catch (error) {
+        showFeedback('Network error. Please try again.', 'danger');
+      }
+    });
+
+    // Handle Signup Form Submission
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const first_name = document.getElementById('firstName').value;
+      const last_name = document.getElementById('lastName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+
+      try {
+        const response = await fetch('https://ladogudi.serv00.net/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ first_name, last_name, email, password })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          showFeedback(data.message + '. Please log in.', 'success');
+          document.getElementById('signupForm').reset();
+          setTimeout(() => document.getElementById('login-tab').click(), 1000);
+        } else {
+          showFeedback(data.error || 'Registration failed', 'danger');
+        }
+      } catch (error) {
+        showFeedback('Network error. Please try again.', 'danger');
+      }
+    });
+  </script>
 </body>
 </html>
